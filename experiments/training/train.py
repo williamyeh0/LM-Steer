@@ -1,8 +1,16 @@
 import os
+import sys
 from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
+
+# Add the root directory to the Python path
+currentdir = os.path.dirname(os.path.abspath(__file__))
+parentdir = os.path.dirname(currentdir)
+rootdir = os.path.dirname(parentdir)
+print(f'Adding rootdir: {rootdir} to sys.path')
+sys.path.append(rootdir)
 
 from lm_steer.arguments import parse_args
 from lm_steer.models.get_model import get_model
