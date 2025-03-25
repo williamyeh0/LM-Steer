@@ -1,6 +1,15 @@
 import json
 from tqdm import tqdm
 import torch
+import os
+import sys
+
+# Add the root directory to the Python path
+currentdir = os.path.dirname(os.path.abspath(__file__))
+parentdir = os.path.dirname(currentdir)
+rootdir = os.path.dirname(parentdir)
+print(f'Adding rootdir: {rootdir} to sys.path') # this works
+sys.path.append(rootdir)
 
 from lm_steer.arguments import parse_args
 from lm_steer.models.get_model import get_model
@@ -10,6 +19,7 @@ def generate(prompt_data, steer_values, tokenizer, model,
              prompt_num, prompt_length, num_beams, num_beam_groups,
              do_sample, temperature, top_p, device):
     for _prompt in tqdm(prompt_data):
+        
         _prompt["generations"] = []
         prompt_text = _prompt["prompt"]["text"]
         token_length = tokenizer(prompt_text,
@@ -37,6 +47,18 @@ def generate(prompt_data, steer_values, tokenizer, model,
 
 
 def main(args):
+    """ 
+        eval_file data/prompts/challenging_prompts_reformatted.jsonl \
+    --output_file logs/$TRIAL/predictions.jsonl \
+    --ckpt_name logs/$TRIAL/checkpoint_small.pt \
+    --model gpt2 --cuda \
+    --adaptor_class multiply \
+    --num_steers 2 \
+    --rank 1000 \
+    --max_length 256 \
+    --verbose \
+    --steer_values 5 1
+    """
     device = torch.device("cuda:0") if args.cuda else torch.device("cpu")
     model, tokenizer = get_model(
         args.model_name, args.adapted_component, args.adaptor_class,
@@ -52,7 +74,8 @@ def main(args):
         prompt_data = list(map(json.loads, f.readlines()))
 
     model.eval()
-    prompt_num = 25
+    # prompt_num = 25
+    prompt_num = 1
     prompt_length = 20
     if args.eval_size is not None:
         prompt_data = prompt_data[:args.eval_size]
