@@ -9,7 +9,7 @@ from torch.optim import Adam
 currentdir = os.path.dirname(os.path.abspath(__file__))
 parentdir = os.path.dirname(currentdir)
 rootdir = os.path.dirname(parentdir)
-print(f'Adding rootdir: {rootdir} to sys.path')
+print(f'Adding rootdir: {rootdir} to sys.path') # this works
 sys.path.append(rootdir)
 
 from lm_steer.arguments import parse_args

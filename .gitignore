@@ -164,3 +164,4 @@ cython_debug/
 _logs
 _logs/
 checkpoints/
+train.sh
