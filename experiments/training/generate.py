@@ -60,11 +60,14 @@ def main(args):
     --steer_values 5 1
     """
     device = torch.device("cuda:0") if args.cuda else torch.device("cpu")
+    # device = torch.device("cpu") # hardcode it
+    print(f'device in generate.py: {device}')
     model, tokenizer = get_model(
         args.model_name, args.adapted_component, args.adaptor_class,
         args.num_steers,
         args.rank, args.epsilon, args.init_var, args.low_resource_mode)
     model.to_device(device)
+    print(f'model\'s device: {model.device}')
 
     ckpt = torch.load(args.ckpt_name)
     model.load_state_dict(ckpt[1])

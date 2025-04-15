@@ -217,13 +217,18 @@ class LMSteerBase(nn.Module):
         return self.steer.state_dict()
 
     def load_state_dict(self, state_dict):
+        # state dict to device too? didn't change much
+        # state_dict = {k:v.to(self.device) for k, v in state_dict.items()}
         self.steer.load_state_dict(state_dict)
 
     def parameters(self):
         return self.steer.parameters()
 
     def to_device(self, device):
-        self.model.to(device)
+        self.model = self.model.to(device)
+        self.model.lm_head = self.model.lm_head.to(device)
+        self.steer.weight = self.steer.weight.to(device)
+        self.steer.steer_values = self.steer.steer_values.to(device)
         self.device = device
 
     def regularization_term(self):
@@ -236,3 +241,15 @@ class LMSteerBase(nn.Module):
             attention_mask=attention_mask,
             labels=input_ids)
         return output
+    def check_device_consistency(self):
+        """Debug utility to check device placement"""
+        devices = {
+            'base_model': self.model.device,
+            # 'steer_device': getattr(self.steer, 'device', None),
+            'lm_head': self.model.lm_head.weight.device,
+            'weight': self.steer.weight.device,
+            'projector1': self.steer.projector1.device if hasattr(self.steer, 'projector1') else None,
+            'projector2': self.steer.projector2.device if hasattr(self.steer, 'projector2') else None,
+            'steer_values': self.steer.steer_values.device,
+        }
+        print("Device mapping:", devices)

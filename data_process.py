@@ -80,6 +80,8 @@ def get_toxicity_scores(input_file, output_file):
     toxicity_model = Detoxify('unbiased')
 
     output_data = []
+
+    avg_tox = 0.0
     
     # Read and reformat each line
     with open(input_file, 'r') as f:
@@ -90,6 +92,7 @@ def get_toxicity_scores(input_file, output_file):
                 "generation": data['generation'],
                 "toxicity": {k: float(v) for k, v in toxicity_model.predict(data['generation']).items()} # float64
             }
+            avg_tox += output_data_row['toxicity']['toxicity']
             output_data.append(output_data_row)
     
     # Write reformatted data to new file
@@ -99,15 +102,23 @@ def get_toxicity_scores(input_file, output_file):
     
     print(f"Scored {len(output_data)} generations")
     print(f"Saved to {output_file}")
+    return avg_tox/len(output_data)
 
-    pass
 
 if __name__ == "__main__":
-    model = "gpt2-small" # gpt2-large, etc. it's what you name it NOT the hf name
+    model = "gemma-2-2b" # gpt2-large, etc. it's what you name it NOT the hf name
     # reformat_challenging_prompts()
+
+    """
+    reformat generations
+    """
     # input_file = f"logs/detoxification-{model}/predictions.jsonl"
     # output_file = f"logs/detoxification-{model}/predictions_reformatted.jsonl"
     # reformat_challenging_generations(input_file, output_file)
-    input_file = f"logs/detoxification-{model}/predictions_reformatted.jsonl"
-    output_file = f"logs/detoxification-{model}/predictions_scored.jsonl"
-    get_toxicity_scores(input_file, output_file)
+    """ 
+    score generations
+    """
+    # input_file = f"logs/detoxification-{model}/predictions_reformatted.jsonl"
+    # output_file = f"logs/detoxification-{model}/predictions_scored.jsonl"
+    # avg_tox = get_toxicity_scores(input_file, output_file)
+    # print(f'avg_tox: {avg_tox}')

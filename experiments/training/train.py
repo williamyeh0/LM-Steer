@@ -18,7 +18,6 @@ from lm_steer.utils import RunningMean
 
 from data import load_dataset
 
-
 def main(args):
     train_data = load_dataset(args.dataset_name, args.data_dir, args.subset)
     dataloader = DataLoader(
@@ -27,11 +26,16 @@ def main(args):
     data_iter = iter(dataloader)
 
     device = torch.device("cuda:0") if args.cuda else torch.device("cpu")
+    print(f'train.py device: {device}')
     model, tokenizer = get_model(
         args.model_name, args.adapted_component, args.adaptor_class,
         args.num_steers,
         args.rank, args.epsilon, args.init_var, args.low_resource_mode)
+    print('train.py: before to_device: ')
+    model.check_device_consistency()
     model.to_device(device)
+    print('after to_device()')
+    model.check_device_consistency()
 
     print("number of training steps:", args.n_steps)
     start_step = 0

@@ -7,11 +7,17 @@ class Hack_no_grad(nn.Module):
     def __init__(self, module):
         super().__init__()
         self.module = module
+    
+    # add getitem and len to make it subscriptable
+    def __getitem__(self, key):
+        return self.module[key]
+    
+    def __len__(self):
+        return len(self.module)
 
     def forward(self, *inputs, **kwargs):
         with torch.no_grad():
             return self.module(*inputs, **kwargs)
-
 
 def find_max_subspans(sequence, n_spans, max_length):
     length = len(sequence)

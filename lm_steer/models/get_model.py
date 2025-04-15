@@ -8,6 +8,19 @@ def get_model(model_name, adapted_component, adaptor_class, num_steers, rank,
             model_name, adapted_component, adaptor_class, num_steers, rank,
             epsilon, init_var, low_resource_mode)
         return model, model.tokenizer
+    elif model_name.startswith("google/gemma-2-2b"):
+        from lm_steer.models.model_gemma_2_2b import Switching_Gemma2Model
+        model = Switching_Gemma2Model(
+            model_name,
+            adapted_component,
+            adaptor_class,
+            num_steers,
+            rank,
+            epsilon,
+            init_var,
+            low_resource_mode
+        )
+        return model, model.tokenizer
     elif model_name.startswith("lora-gpt2"):
         from lm_steer.models.model_lora_gpt_neo import LORA_GPTNeoModel
         model = LORA_GPTNeoModel(model_name, rank, epsilon)
